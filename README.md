@@ -2,6 +2,9 @@
 
 A minimal development template for Three.js projects using Vite.
 
+# Live preview (may take a moment for render to spin up)
+https://threejs-dev-template.onrender.com
+
 ## Quick Start
 
 ```bash
