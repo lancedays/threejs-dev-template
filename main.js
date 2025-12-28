@@ -1,78 +1,37 @@
-import * as THREE from 'three';
+import { Engine, Scene, Box, Sphere, Torus } from './src/index.js';
 
-class ThreeScene {
-    constructor() {
-        this.initScene();
-        this.setupEventListeners();
-    }
+// Create the engine (handles rendering)
+const engine = new Engine();
 
-    initScene() {
-        this.scene = new THREE.Scene();
-        this.scene.background = new THREE.Color(0x0a0a1f);
-        this.camera = new THREE.PerspectiveCamera(
-            75,
-            window.innerWidth / window.innerHeight,
-            0.1,
-            1000
-        );
-        this.renderer = new THREE.WebGLRenderer({ antialias: true });
+// Create a scene (handles camera, lights, objects)
+const scene = new Scene({ background: '#0a0a1f' });
 
-        this.renderer.setSize(window.innerWidth, window.innerHeight);
-        this.renderer.setPixelRatio(window.devicePixelRatio);
-        document.body.appendChild(this.renderer.domElement);
+// Add some objects with simple, readable syntax
+scene.add(
+    new Box({ color: 'coral', x: -3 })
+        .spin({ speedX: 0.5, speedY: 1 })
+);
 
-        this.camera.position.z = 5;
-    }
+scene.add(
+    new Sphere({ color: 'dodgerblue', x: 0, radius: 0.8 })
+        .float({ amplitude: 0.5, speed: 2 })
+);
 
-    setupEventListeners() {
-        window.addEventListener('resize', () => {
-            this.camera.aspect = window.innerWidth / window.innerHeight;
-            this.camera.updateProjectionMatrix();
-            this.renderer.setSize(window.innerWidth, window.innerHeight);
-        });
-    }
+scene.add(
+    new Torus({ color: '#ff00ff', x: 3, tube: 0.3 })
+        .spin({ speedX: 0.5, speedY: 1 }).float({ amplitude: 0.5, speed: 1 })
+);
 
-    render() {
-        this.renderer.render(this.scene, this.camera);
-    }
-}
+// Add a floor
+scene.add(
+    new Box({
+        color: 'darkgray',
+        width: 10000,
+        height: 0.1,
+        depth: 10000,
+        y: -2
+    })
+);
 
-class ColorCube extends ThreeScene {
-    constructor() {
-        super();
-        this.createCube();
-        this.animate();
-    }
-
-    createCube() {
-        const geometry = new THREE.BoxGeometry(2, 2, 2);
-        const materials = [
-            new THREE.MeshBasicMaterial({ color: 0xff0000 }), // red
-            new THREE.MeshBasicMaterial({ color: 0xff8c00 }), // orange
-            new THREE.MeshBasicMaterial({ color: 0xffff00 }), // yellow
-            new THREE.MeshBasicMaterial({ color: 0x00ff00 }), // green
-            new THREE.MeshBasicMaterial({ color: 0x0000ff }), // blue
-            new THREE.MeshBasicMaterial({ color: 0x4b0082 }), // indigo
-        ];
-
-        this.cube = new THREE.Mesh(geometry, materials);
-        this.scene.add(this.cube);
-    }
-
-    animate = () => {
-        requestAnimationFrame(this.animate);
-
-        // Rotate cube
-        this.cube.rotation.x += 0.01;
-        this.cube.rotation.y += 0.01;
-
-        this.render();
-    }
-}
-
-// Start the application
-function main() {
-    new ColorCube();
-}
-
-main();
+// Start the engine
+engine.run(scene);
